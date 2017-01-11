@@ -41,9 +41,11 @@ class WordGen(object):
         if os.access(path=self.password_file, mode=os.R_OK):
             with open(self.password_file, "r") as pass_file, open(self.output, 'w') as output_file:
                 for line in pass_file:
+                    print(self.username + self.delimiter + line)
                     output_file.write(self.username + self.delimiter + line)
                 output_file.close()
                 pass_file.close()
+                print("Done!")
         else:
             print("Password file cannot be opened for access!")
             exit(1)
