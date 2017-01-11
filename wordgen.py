@@ -1,5 +1,5 @@
 #!/usr/bin/python
-
+# -*- coding: utf-8 -*-
 # SNAKES AHEAD!!!
 # Created by ogator on 1/11/2017.
 import argparse
@@ -8,7 +8,20 @@ import os
 
 class WordGen(object):
     def __init__(self):
-        parser = argparse.ArgumentParser(description='Collect data on input files and such')
+        self.description = "         _____        _\n" \
+                           "       d8888888b.   d888b   ,db\n" \
+                           "     d888888888888888888888888.*\n" \
+                           "    888888 88888888888 88 8888888o\n" \
+                           "   8888888 888888888 8888 8888`~~   - GRIZZLY STEPPE - \n" \
+                           "   8888888 888888888 88888\n" \
+                           "   888888 8888888888 8888\n" \
+                           "  ## 88888  88888 ##  8888\n" \
+                           " #### 88888      ###   8888\n" \
+                           "###,,, 888,,,    ##,,,  88,,,\n"
+
+        print(self.description)
+
+        parser = argparse.ArgumentParser()
         parser.add_argument('--username', required=True, type=str, dest='username',
                             help='Username')
         parser.add_argument('--passfile', required=True, dest='password_file',
