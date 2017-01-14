@@ -8,7 +8,7 @@
     "host": "localhost",
     "port": 27017,
     "username": "podesta",
-    "password": "p@ssword1",
+    "password": "p4ssword",
     "database": "wordgen",
     "collection": "UPPairs"
   }

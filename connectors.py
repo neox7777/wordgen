@@ -41,8 +41,14 @@ class MongoOutput:
             raise ValueError("Database name is not present in the config")
         if not config["collection"]:
             raise ValueError("Collection name is not present in the config")
+        self.config = config
+        self.client = MongoClient("mongodb://" + config["username"] + ":" + config["password"] + "@" + config["host"]
+                                  + ":" + str(config["port"]) + "/")
         return
 
     def save(self, document):
         print("Saving: ", document)
+        db = self.client[self.config["database"]]
+        col = db[self.config["collection"]]
+        col.insert_one(document)
         return
