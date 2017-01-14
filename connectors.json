@@ -1,0 +1,15 @@
+{
+  "file": {
+    "type": "file",
+    "name": "generated2.txt"
+  },
+  "mongo": {
+    "type": "mongodb",
+    "host": "localhost",
+    "port": 27017,
+    "username": "podesta",
+    "password": "p@ssword1",
+    "database": "wordgen",
+    "collection": "UPPairs"
+  }
+}

@@ -4,6 +4,8 @@
 # Created by ogator on 1/11/2017.
 import argparse
 import os
+import menu
+from wordgenoutput import WordGenOutput
 
 
 class WordGen(object):
@@ -28,22 +30,39 @@ class WordGen(object):
                             help='Input file with passwords')
         parser.add_argument('--delim', required=True, dest='delimiter',
                             help='Delimiter between username and passwords')
-        parser.add_argument('--output', required=True, dest='output',
-                            help='Output file')
+        parser.add_argument('--app', dest='app_prefix',
+                            help='Optional application key')
         args = parser.parse_args()
         self.username = args.username
         self.password_file = args.password_file
         self.delimiter = args.delimiter
-        self.output = args.output
+        self.app_prefix = args.app_prefix
+        self.output_module = WordGenOutput()
+        self.show_connectors_menu()
+
+    def show_connectors_menu(self):
+        # format the menu
+        con_options = []
+        for con in self.output_module.get_connector_options():
+            con_options.append({"name": con, "function": self.init_connector})
+        # Choose the connector menu
+        con_menu = menu.Menu("Choose output connector")
+        con_menu.addOptions(con_options)
+        con_menu.open()
+
+    def init_connector(self, con):
+        self.output_module.init_output_connector(con)
+        return
 
     def generate(self):
         # check for existence
         if os.access(path=self.password_file, mode=os.R_OK):
-            with open(self.password_file, "r") as pass_file, open(self.output, 'w') as output_file:
+            with open(self.password_file, "r", buffering=1) as pass_file:
                 for line in pass_file:
-                    print(self.username + self.delimiter + line)
-                    output_file.write(self.username + self.delimiter + line)
-                output_file.close()
+                    output = {"username": self.username, "delimiter": self.delimiter, "password": line.rstrip('\n')}
+                    if self.app_prefix:
+                        output["application"] = self.app_prefix
+                    self.output_module.save(output)
                 pass_file.close()
                 print("Done!")
         else:
