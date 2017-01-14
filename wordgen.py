@@ -33,12 +33,15 @@ class WordGen(object):
                             help='Delimiter between username and passwords')
         parser.add_argument('--app', dest='app_prefix',
                             help='Optional application key')
+        parser.add_argument('--buffer', dest='buffer', type=int,
+                            help='Buffer size, default 100k')
         args = parser.parse_args()
         self.username = args.username
         self.password_file = args.password_file
         self.delimiter = args.delimiter
         self.app_prefix = args.app_prefix
         self.output_module = WordGenOutput()
+        self.buff_size = args.buffer if args.buffer else 100000
         self.buffer = []
         self.show_connectors_menu()
 
@@ -66,10 +69,15 @@ class WordGen(object):
                     if self.app_prefix:
                         output["application"] = self.app_prefix
                     self.buffer.append(output)
-                    if len(self.buffer) > 20000:
+                    if line is None:
+                        return
+                    if len(self.buffer) >= self.buff_size:
                         self.output_module.save(self.buffer)
                         self.buffer.clear()
                 pass_file.close()
+                # save the remaining buffer if any
+                if len(self.buffer) > 0:
+                    self.output_module.save(self.buffer)
                 print("Done! ", time.strftime("%H:%M:%S"))
         else:
             print("Password file cannot be opened for access!")
