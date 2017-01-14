@@ -46,9 +46,9 @@ class MongoOutput:
                                   + ":" + str(config["port"]) + "/")
         return
 
-    def save(self, document):
-        print("Saving: ", document)
+    def save(self, doc_array):
+        print("Saving: ", len(doc_array), " documents")
         db = self.client[self.config["database"]]
         col = db[self.config["collection"]]
-        col.insert_one(document)
+        col.insert_many(doc_array)
         return

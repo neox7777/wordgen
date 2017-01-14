@@ -5,6 +5,7 @@
 import argparse
 import os
 import menu
+import time
 from wordgenoutput import WordGenOutput
 
 
@@ -38,6 +39,7 @@ class WordGen(object):
         self.delimiter = args.delimiter
         self.app_prefix = args.app_prefix
         self.output_module = WordGenOutput()
+        self.buffer = []
         self.show_connectors_menu()
 
     def show_connectors_menu(self):
@@ -55,6 +57,7 @@ class WordGen(object):
         return
 
     def generate(self):
+        print("Starting: ", time.strftime("%H:%M:%S"))
         # check for existence
         if os.access(path=self.password_file, mode=os.R_OK):
             with open(self.password_file, "r", buffering=1) as pass_file:
@@ -62,9 +65,12 @@ class WordGen(object):
                     output = {"username": self.username, "delimiter": self.delimiter, "password": line.rstrip('\n')}
                     if self.app_prefix:
                         output["application"] = self.app_prefix
-                    self.output_module.save(output)
+                    self.buffer.append(output)
+                    if len(self.buffer) > 20000:
+                        self.output_module.save(self.buffer)
+                        self.buffer.clear()
                 pass_file.close()
-                print("Done!")
+                print("Done! ", time.strftime("%H:%M:%S"))
         else:
             print("Password file cannot be opened for access!")
             exit(1)
