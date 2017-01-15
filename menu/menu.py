@@ -1,26 +1,12 @@
 import os
 
 
-def doNothing(object=None):
-    pass
-
-
-class notObject(object):
-    pass
-
-
-class Menu(notObject):
-    def __init__(self, title, update=doNothing):
+class Menu(object):
+    def __init__(self, title):
         self.title = title
         self.options = []
         self.indicator = ">>>"
         self.explicit()
-        self.update = update
-
-    def __setattr__(self, name, value):
-        if isinstance(value, Menu) and name != "__parent__":
-            value.__parent__ = self
-        super(notObject, self).__setattr__(name, value)
 
     def addOptions(self, options):
         self.options += options
