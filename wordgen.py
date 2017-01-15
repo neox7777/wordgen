@@ -3,9 +3,9 @@
 # SNAKES AHEAD!!!
 # Created by ogator on 1/11/2017.
 import argparse
+import datetime
 import os
 import menu
-import time
 from wordgenoutput import WordGenOutput
 
 
@@ -43,6 +43,9 @@ class WordGen(object):
         self.output_module = WordGenOutput()
         self.buff_size = args.buffer if args.buffer else 100000
         self.buffer = []
+        self.file_len = 0
+        self.processed = 0
+        self.start_time = None
         self.show_connectors_menu()
 
     def show_connectors_menu(self):
@@ -59,29 +62,48 @@ class WordGen(object):
         self.output_module.init_output_connector(con)
         return
 
+    def file_length(self, filename):
+        with open(filename) as f:
+            for i, l in enumerate(f):
+                pass
+        f.close()
+        return i + 1
+
+    def show_progress(self):
+        os.system('cls' if os.name == 'nt' else 'clear')
+        print("Starting: ", self.start_time.isoformat())
+        print("Total file length: ", self.file_len, " passwords")
+        print("Processed: ", self.processed, " or ", self.processed/(self.file_len/100), "% ")
+        if self.processed == self.file_len:
+            print("Done: ", datetime.datetime.now().isoformat())
+        return
+
     def generate(self):
-        print("Starting: ", time.strftime("%H:%M:%S"))
-        # check for existence
-        if os.access(path=self.password_file, mode=os.R_OK):
-            with open(self.password_file, "r", buffering=1) as pass_file:
-                for line in pass_file:
-                    output = {"username": self.username, "delimiter": self.delimiter, "password": line.rstrip('\n')}
-                    if self.app_prefix:
-                        output["application"] = self.app_prefix
-                    self.buffer.append(output)
-                    if line is None:
-                        return
-                    if len(self.buffer) >= self.buff_size:
-                        self.output_module.save(self.buffer)
-                        self.buffer.clear()
-                pass_file.close()
-                # save the remaining buffer if any
-                if len(self.buffer) > 0:
+        os.system('cls' if os.name == 'nt' else 'clear')
+        print("Determining file length...")
+        self.start_time = datetime.datetime.now()
+        self.file_len = self.file_length(self.password_file)
+        self.show_progress()
+        with open(self.password_file, "r", buffering=1) as pass_file:
+            for line in pass_file:
+                output = {"username": self.username, "delimiter": self.delimiter, "password": line.rstrip('\n')}
+                if self.app_prefix:
+                    output["application"] = self.app_prefix
+                self.buffer.append(output)
+                if line is None:
+                    return
+                if len(self.buffer) >= self.buff_size:
+                    self.processed += len(self.buffer)
                     self.output_module.save(self.buffer)
-                print("Done! ", time.strftime("%H:%M:%S"))
-        else:
-            print("Password file cannot be opened for access!")
-            exit(1)
+                    self.show_progress()
+                    self.buffer.clear()
+            pass_file.close()
+            # save the remaining buffer if any
+            if len(self.buffer) > 0:
+                self.output_module.save(self.buffer)
+                self.processed += len(self.buffer)
+                self.show_progress()
+                self.buffer.clear()
 
 
 def main():

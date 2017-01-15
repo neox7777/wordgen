@@ -8,8 +8,8 @@ from pymongo import MongoClient
 
 class FileOutput:
     def __init__(self, config):
-        if not config["name"]:
-            raise ValueError("File name is not present in the config")
+        if "name" not in config:
+            raise AttributeError("File name is not present in the config")
         self.file_base = config["name"]
         return
 
@@ -20,7 +20,6 @@ class FileOutput:
             file_name += filename + "_" + doc_array[0]["application"] + file_extension
         else:
             file_name = self.file_base
-        print("Saving: ", len(doc_array), " documents")
         with open(file_name, "a") as out_file:
             for line in doc_array:
                 out_file.write(line["username"] + line["delimiter"] + line["password"] + "\n")
@@ -30,25 +29,24 @@ class FileOutput:
 
 class MongoOutput:
     def __init__(self, config):
-        if not config["host"]:
+        if "host" not in config:
             raise AttributeError("Host is not present in the config")
-        if not config["port"]:
-            raise ValueError("Port is not present in the config")
-        if not config["username"]:
-            raise ValueError("Username is not present in the config")
-        if not config["password"]:
-            raise ValueError("Password is not present in the config")
-        if not config["database"]:
-            raise ValueError("Database name is not present in the config")
-        if not config["collection"]:
-            raise ValueError("Collection name is not present in the config")
+        if "port" not in config:
+            raise AttributeError("Port is not present in the config")
+        if "username" not in config:
+            raise AttributeError("Username is not present in the config")
+        if "password" not in config:
+            raise AttributeError("Password is not present in the config")
+        if "database" not in config:
+            raise AttributeError("Database name is not present in the config")
+        if "collection" not in config:
+            raise AttributeError("Collection name is not present in the config")
         self.config = config
         self.client = MongoClient("mongodb://" + config["username"] + ":" + config["password"] + "@" + config["host"]
                                   + ":" + str(config["port"]) + "/")
         return
 
     def save(self, doc_array):
-        print("Saving: ", len(doc_array), " documents")
         db = self.client[self.config["database"]]
         col = db[self.config["collection"]]
         col.insert_many(doc_array)
